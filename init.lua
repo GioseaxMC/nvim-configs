@@ -63,6 +63,7 @@ cmp.setup({
   sources = {
     {
       name = "buffer",
+      max_item_count = 6,
       option = {
         get_bufnrs = function()
           return vim.api.nvim_list_bufs()
