@@ -5,7 +5,7 @@ require('packer').startup( function(use)
     use 'morhetz/gruvbox'
     use 'nvim-telescope/telescope.nvim'
     use 'nvim-lua/plenary.nvim'
-    use 'nvim-treesitter/nvim-treesitter'
+    -- use 'nvim-treesitter/nvim-treesitter'
     use 'BurntSushi/ripgrep'
     use 'sharkdp/fd'
     use 'blazkowolf/gruber-darker.nvim'
@@ -15,64 +15,64 @@ require('packer').startup( function(use)
     use 'hrsh7th/cmp-buffer'
 end)
 
-local cmp = require("cmp")
+-- local cmp = require("cmp")
 
-local function get_buffer_name(bufnr)
-  local name = vim.api.nvim_buf_get_name(bufnr)
-  return vim.fn.fnamemodify(name, ":t")  -- get tail (filename only)
-end
+-- local function get_buffer_name(bufnr)
+--   local name = vim.api.nvim_buf_get_name(bufnr)
+--   return vim.fn.fnamemodify(name, ":t")  -- get tail (filename only)
+-- end
+-- 
+-- local function find_first_line(bufnr, word)
+--   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+--   for _, line in ipairs(lines) do
+--     if line:find(vim.pesc(word), 1, true) then
+--       return line
+--     end
+--   end
+--   return nil
+-- end
 
-local function find_first_line(bufnr, word)
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  for _, line in ipairs(lines) do
-    if line:find(vim.pesc(word), 1, true) then
-      return line
-    end
-  end
-  return nil
-end
-
-cmp.setup({
-  formatting = {
-    format = function(entry, vim_item)
-      if entry.source.name == "buffer" then
-        local word = entry:get_completion_item().word or entry:get_completion_item().label
-        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_loaded(bufnr) then
-            local line = find_first_line(bufnr, word)
-            if line then
-              local bufname = get_buffer_name(bufnr)
-              vim_item.menu = string.format("[%s] %s", bufname, line)
-              return vim_item
-            end
-          end
-        end
-        vim_item.menu = "[buffer]"
-      end
-      return vim_item
-    end,
-  },
+-- cmp.setup({
+--   formatting = {
+--     format = function(entry, vim_item)
+--       if entry.source.name == "buffer" then
+--         local word = entry:get_completion_item().word or entry:get_completion_item().label
+--         for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+--           if vim.api.nvim_buf_is_loaded(bufnr) then
+--             local line = find_first_line(bufnr, word)
+--             if line then
+--               local bufname = get_buffer_name(bufnr)
+--               vim_item.menu = string.format("[%s] %s", bufname, line)
+--               return vim_item
+--             end
+--           end
+--         end
+--         vim_item.menu = "[buffer]"
+--       end
+--       return vim_item
+--     end,
+--   },
     
-    mapping = cmp.mapping.preset.insert({
-        ['<C-o>'] = cmp.mapping.complete(),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
-        ['<Tab>'] = cmp.mapping.select_next_item(),
-        ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    }),
-
-  sources = {
-    {
-      name = "buffer",
-      max_item_count = 6,
-      option = {
-        get_bufnrs = function()
-          return vim.api.nvim_list_bufs()
-        end,
-      },
-    },
-  },
-})
-
+--     mapping = cmp.mapping.preset.insert({
+--         ['<C-o>'] = cmp.mapping.complete(),
+--         ['<CR>'] = cmp.mapping.confirm({ select = true }),
+--         ['<Tab>'] = cmp.mapping.select_next_item(),
+--         ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+--     }),
+-- 
+--   sources = {
+--     {
+--       name = "buffer",
+--       max_item_count = 6,
+--       option = {
+--         get_bufnrs = function()
+--           return vim.api.nvim_list_bufs()
+--         end,
+--       },
+--     },
+--   },
+-- })
+ 
 require('lualine').setup {}
 
 require('gruber-darker').setup {
@@ -83,16 +83,14 @@ require('gruber-darker').setup {
     }
 }
 
-require('telescope').setup{
-  defaults = {
-    vimgrep_arguments = {
-      'rg', '--vimgrep', '--no-heading', '--smart-case', '--follow',
-    },
-    file_ignore_patterns = {"*.git/*", "node_modules/*", "*.lock", "*.png", "*.jpg", "*.jpeg"},
-  }
-}
+-- require('telescope').setup{}
 
 local ok, _ = pcall(vim.cmd, 'colorscheme gruber-darker')
+
+vim.cmd([[
+  autocmd BufRead,BufNewFile *.sw set filetype=swami
+  autocmd BufRead,BufNewFile *.ll set filetype=llvm
+]])
 
 if not ok then
     vim.cmd[[colorscheme gruvbox]]
@@ -122,12 +120,6 @@ vim.g.netrw_change_dir = 1
 
 vim.o.guicursor = "n-v-c:block-blinkon500-blinkoff500-blinkwait500,i-ci-ve:ver25-blinkon500-blinkoff500-blinkwait500"
 
-vim.filetype.add({
-  extension = {
-    sw = "swami",
-    ll = "llvm"
-  }
-})
 
 
 vim.keymap.set('t', '<C-w>h', "<C-\\><C-n><C-w>h",{silent = true})
